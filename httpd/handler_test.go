@@ -2036,7 +2036,7 @@ func TestHandler_serveShowTagValues(t *testing.T) {
 						Series: []*influxql.Row{
 							{
 								Name:    "cpu",
-								Columns: []string{"tagValue"},
+								Columns: []string{"host"},
 								Values: [][]interface{}{
 									str2iface([]string{"server01"}),
 									str2iface([]string{"server02"}),
@@ -2044,7 +2044,7 @@ func TestHandler_serveShowTagValues(t *testing.T) {
 							},
 							{
 								Name:    "gpu",
-								Columns: []string{"tagValue"},
+								Columns: []string{"host"},
 								Values: [][]interface{}{
 									str2iface([]string{"server02"}),
 									str2iface([]string{"server03"}),
@@ -2064,7 +2064,7 @@ func TestHandler_serveShowTagValues(t *testing.T) {
 						Series: []*influxql.Row{
 							{
 								Name:    "cpu",
-								Columns: []string{"tagValue"},
+								Columns: []string{"host"},
 								Values: [][]interface{}{
 									str2iface([]string{"server01"}),
 									str2iface([]string{"server02"}),
@@ -2084,7 +2084,7 @@ func TestHandler_serveShowTagValues(t *testing.T) {
 						Series: []*influxql.Row{
 							{
 								Name:    "cpu",
-								Columns: []string{"tagValue"},
+								Columns: []string{"host"},
 								Values: [][]interface{}{
 									str2iface([]string{"server01"}),
 								},
@@ -2103,7 +2103,7 @@ func TestHandler_serveShowTagValues(t *testing.T) {
 						Series: []*influxql.Row{
 							{
 								Name:    "gpu",
-								Columns: []string{"tagValue"},
+								Columns: []string{"host"},
 								Values: [][]interface{}{
 									str2iface([]string{"server03"}),
 								},
@@ -2122,7 +2122,7 @@ func TestHandler_serveShowTagValues(t *testing.T) {
 						Series: []*influxql.Row{
 							{
 								Name:    "gpu",
-								Columns: []string{"tagValue"},
+								Columns: []string{"region"},
 								Values: [][]interface{}{
 									str2iface([]string{"caeast"}),
 								},
@@ -2141,7 +2141,7 @@ func TestHandler_serveShowTagValues(t *testing.T) {
 						Series: []*influxql.Row{
 							{
 								Name:    "cpu",
-								Columns: []string{"tagValue"},
+								Columns: []string{"host", "region"},
 								Values: [][]interface{}{
 									str2iface([]string{"server01"}),
 									str2iface([]string{"uswest"}),

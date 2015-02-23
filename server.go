@@ -2147,11 +2147,14 @@ func (s *Server) executeShowTagValuesStatement(stmt *influxql.ShowTagValuesState
 			ids = m.seriesIDs
 		}
 
-		tagValues := m.tagValuesByKeyAndSeriesID(stmt.TagKeys, ids)
+		tagKeys, tagValues := m.tagValuesByKeyAndSeriesID(stmt.TagKeys, ids)
+
+		keys := tagKeys.list()
+		sort.Strings(keys)
 
 		r := &influxql.Row{
 			Name:    m.Name,
-			Columns: []string{"tagValue"},
+			Columns: keys,
 		}
 
 		vals := tagValues.list()

@@ -1367,7 +1367,7 @@ func (m *Measurement) tagKeys() []string {
 	return keys
 }
 
-func (m *Measurement) tagValuesByKeyAndSeriesID(tagKeys []string, ids seriesIDs) stringSet {
+func (m *Measurement) tagValuesByKeyAndSeriesID(tagKeys []string, ids seriesIDs) (stringSet, stringSet) {
 	// If no tag keys were passed, get all tag keys for the measurement.
 	if len(tagKeys) == 0 {
 		for k := range m.seriesByTagKeyValue {
@@ -1375,7 +1375,8 @@ func (m *Measurement) tagValuesByKeyAndSeriesID(tagKeys []string, ids seriesIDs)
 		}
 	}
 
-	// Make a set to hold all tag values found.
+	// Make a set to hold all tag keys and values found.
+	tKeys := newStringSet()
 	tagValues := newStringSet()
 
 	// Iterate all series to collect tag values.
@@ -1389,12 +1390,13 @@ func (m *Measurement) tagValuesByKeyAndSeriesID(tagKeys []string, ids seriesIDs)
 		// from this series, if they exist.
 		for _, tagKey := range tagKeys {
 			if tagVal, ok := s.Tags[tagKey]; ok {
+				tKeys.add(tagKey)
 				tagValues.add(tagVal)
 			}
 		}
 	}
 
-	return tagValues
+	return tKeys, tagValues
 }
 
 type stringSet map[string]struct{}
