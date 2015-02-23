@@ -51,7 +51,7 @@ const (
 
 	// Database messages
 	createDatabaseMessageType = messaging.MessageType(0x10)
-	deleteDatabaseMessageType = messaging.MessageType(0x11)
+	dropDatabaseMessageType   = messaging.MessageType(0x11)
 
 	// Retention policy messages
 	createRetentionPolicyMessageType     = messaging.MessageType(0x20)
@@ -727,15 +727,15 @@ type createDatabaseCommand struct {
 	Name string `json:"name"`
 }
 
-// DeleteDatabase deletes an existing database.
-func (s *Server) DeleteDatabase(name string) error {
-	c := &deleteDatabaseCommand{Name: name}
-	_, err := s.broadcast(deleteDatabaseMessageType, c)
+// DropDatabase deletes an existing database.
+func (s *Server) DropDatabase(name string) error {
+	c := &dropDatabaseCommand{Name: name}
+	_, err := s.broadcast(dropDatabaseMessageType, c)
 	return err
 }
 
-func (s *Server) applyDeleteDatabase(m *messaging.Message) (err error) {
-	var c deleteDatabaseCommand
+func (s *Server) applyDropDatabase(m *messaging.Message) (err error) {
+	var c dropDatabaseCommand
 	mustUnmarshalJSON(m.Data, &c)
 
 	if s.databases[c.Name] == nil {
@@ -743,14 +743,14 @@ func (s *Server) applyDeleteDatabase(m *messaging.Message) (err error) {
 	}
 
 	// Remove from metastore.
-	err = s.meta.mustUpdate(m.Index, func(tx *metatx) error { return tx.deleteDatabase(c.Name) })
+	err = s.meta.mustUpdate(m.Index, func(tx *metatx) error { return tx.dropDatabase(c.Name) })
 
 	// Delete the database entry.
 	delete(s.databases, c.Name)
 	return
 }
 
-type deleteDatabaseCommand struct {
+type dropDatabaseCommand struct {
 	Name string `json:"name"`
 }
 
@@ -2036,7 +2036,7 @@ func (s *Server) executeCreateDatabaseStatement(q *influxql.CreateDatabaseStatem
 }
 
 func (s *Server) executeDropDatabaseStatement(q *influxql.DropDatabaseStatement, user *User) *Result {
-	return &Result{Err: s.DeleteDatabase(q.Name)}
+	return &Result{Err: s.DropDatabase(q.Name)}
 }
 
 func (s *Server) executeShowDatabasesStatement(q *influxql.ShowDatabasesStatement, user *User) *Result {
@@ -2761,8 +2761,8 @@ func (s *Server) processor(client MessagingClient, done chan struct{}) {
 				err = s.applyDeleteDataNode(m)
 			case createDatabaseMessageType:
 				err = s.applyCreateDatabase(m)
-			case deleteDatabaseMessageType:
-				err = s.applyDeleteDatabase(m)
+			case dropDatabaseMessageType:
+				err = s.applyDropDatabase(m)
 			case createUserMessageType:
 				err = s.applyCreateUser(m)
 			case updateUserMessageType:
